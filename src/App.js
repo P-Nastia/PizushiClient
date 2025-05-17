@@ -1,9 +1,11 @@
 import './App.css';
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 
-import CategoriesPage from "./pages/categories/index";
+import CategoriesPage from "./pages/categories";
 import CategoriesCreate from "./pages/categories/create";
-import Layout from "./components/Layout/index";
+import Layout from "./components/Layout";
+import NoMatch from "./pages/NoMatch";
+import HomePage from "./pages/home";
 
 
 const App = () => { //стрєлочна функція
@@ -27,15 +29,20 @@ const App = () => { //стрєлочна функція
 
 
     return (
-        <Router>
+        <>
              <Routes>
-                 <Route element={<Layout></Layout>}>
+                 <Route path="/" element={<Layout></Layout>}>
                      // це все буде Outlet
-                     <Route path="/" element={<CategoriesPage></CategoriesPage>} />
-                     <Route path="/create" element={<CategoriesCreate></CategoriesCreate>} />
+                     <Route index element={<HomePage></HomePage>} />
+                     <Route path={"categories"}>
+                         <Route index element={<CategoriesPage></CategoriesPage>} />
+                         <Route path={"create"} element={<CategoriesCreate></CategoriesCreate>} />
+
+                     </Route>
                  </Route>
+                 <Route path="*" element={<NoMatch></NoMatch>} />
              </Routes>
-        </Router>
+        </>
 
     )
 }

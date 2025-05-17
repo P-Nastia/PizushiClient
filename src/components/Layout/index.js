@@ -1,10 +1,10 @@
-import NavBar from '../navBar';
+import Header from '../header';
 import {Outlet} from 'react-router-dom';
 
 const Layout = () =>{
     return(
         <div>
-            <NavBar/>
+            <Header/>
             <main>
                 {<Outlet/>  /*всі сторінки зможуть мати меню, вони = children цього файлу*/}
 

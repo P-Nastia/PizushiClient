@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
+import {Link} from "react-router-dom";
 
 const CategoriesPage = () => {
 
@@ -20,6 +21,9 @@ const CategoriesPage = () => {
         <>
             <div className={"container"}>
                 <h1 className={"text-center"}>Категорії</h1>
+                    <Link className={"btn btn-primary"} to={"create"}>
+                        Add new
+                    </Link>
                 {/*<button onClick={() => {*/}
                 {/*    setCount(count + 1);*/}
                 {/*}}>*/}
