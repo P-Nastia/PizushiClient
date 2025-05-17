@@ -3,7 +3,7 @@ import { HashRouter as Router, Routes, Route } from "react-router-dom";
 
 import CategoriesPage from "./pages/categories/index";
 import CategoriesCreate from "./pages/categories/create";
-import Layout from "./layout";
+import Layout from "./components/Layout/index";
 
 
 const App = () => { //стрєлочна функція
