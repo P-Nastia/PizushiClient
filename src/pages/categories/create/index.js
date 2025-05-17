@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate} from "react-router-dom";
 import {useLocation} from "react-router-dom";
+import axiosInstance from "../../../api/axiosInstance";
 
 const CategoriesCreate = () => {
     const [formData, setFormData] = useState({
@@ -50,13 +51,13 @@ const CategoriesCreate = () => {
         data.append("imageFile", formData.image);
 
         try {
-            await axios.post("http://localhost:5003/api/categories", data, {
+            await axiosInstance.post("/api/categories", data, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
             });
 
-            navigate("/categories");
+            navigate(".."); // переход на сторінку категорій (на одну сторінку назад)
         } catch (err) {
             const newErrors = {};
             const errors=err.response.data.errors;

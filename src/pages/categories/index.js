@@ -1,13 +1,15 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {Link} from "react-router-dom";
+import axiosInstance from "../../api/axiosInstance";
+import {BASE_URL} from "../../api/apiConfig";
 
 const CategoriesPage = () => {
 
     const [list, setList] = useState([]); // створення масиву
 
     useEffect(() => {
-        axios.get("http://localhost:5003/api/Categories")
+        axiosInstance.get("/api/Categories")
             .then(res => {
                 const {data} = res;
                 console.log('Get list of categories', data);
@@ -46,7 +48,7 @@ const CategoriesPage = () => {
                                 <tr key={item.id}>
                                     <td>{item.id}</td>
                                     <td>{item.name}</td>
-                                    <td><img width={75} src={`http://localhost:5003/images/200_${item.image}`} alt={item.name}/></td>
+                                    <td><img width={75} src={`${BASE_URL}/images/200_${item.image}`} alt={item.name}/></td>
                                 </tr>
                             ))}
                         </tbody>
