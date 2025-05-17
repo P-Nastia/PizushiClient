@@ -3,7 +3,7 @@ import { HashRouter as Router, Routes, Route } from "react-router-dom";
 
 import CategoriesPage from "./pages/categories";
 import CategoriesCreate from "./pages/categories/create";
-import Layout from "./components/Layout";
+import Layout from "./components/layout";
 import NoMatch from "./pages/NoMatch";
 import HomePage from "./pages/home";
 

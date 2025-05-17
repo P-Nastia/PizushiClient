@@ -18,18 +18,25 @@ const CategoriesCreate = () => {
     const navigate = useNavigate();
 
     const handleOnChange=(e)=>{
-        const {name,files,value}=e.target;
-        console.log(name,value,files);
-        if(name==='image'){
             setFormData({
                 ...formData,
-                image:files[0]
+                [e.target.name]:e.target.value
+            })
+    }
+
+    const handleFileChange=(e)=>{
+        const files=e.target.files;
+        if(files.length>0){
+            setFormData({
+                ...formData,
+                [e.target.name]:files[0]
             })
         }
         else{
+            console.log(files[0]);
             setFormData({
                 ...formData,
-                [name]:value
+                [e.target.name]:null
             })
         }
     }
@@ -119,7 +126,7 @@ const CategoriesCreate = () => {
                         type="file"
                         className={`form-control ${errors.image ? "is-invalid" : ""}`}
                         name="image"
-                        onChange={handleOnChange}
+                        onChange={handleFileChange}
                         accept="image/*"
 
                     />
