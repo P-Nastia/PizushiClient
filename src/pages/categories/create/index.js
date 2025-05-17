@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate} from "react-router-dom";
 import {useLocation} from "react-router-dom";
 import axiosInstance from "../../../api/axiosInstance";
+import BaseTextInput from "../../../components/common/baseTextInput";
+import BaseFileInput from "../../../components/common/baseFileInput";
 
 const CategoriesCreate = () => {
     const [formData, setFormData] = useState({
@@ -91,50 +93,29 @@ const CategoriesCreate = () => {
         <div className="container mt-4">
             <h2>Create New Category</h2>
             <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                    <label className="form-label">Name</label>
-                    <input
-                        type="text"
-                        className={`form-control ${errors.name ? "is-invalid" : ""}`}
-                        name="name"
-                        value={formData.name}
-                        onChange={handleOnChange}
+                <BaseTextInput
+                    field={"name"}
+                    label={"Name"}
+                    handleOnChange={handleOnChange}
+                    value={formData.name}
+                    error={errors.name}
+                />
 
-                    />
-                    {errors.name && (
-                        <div className="invalid-feedback">{errors.name}</div>
-                    )}
-                </div>
+                <BaseTextInput
+                    field={"slug"}
+                    label={"Slug"}
+                    handleOnChange={handleOnChange}
+                    value={formData.slug}
+                    error={errors.slug}
+                />
 
-                <div className="mb-3">
-                    <label className="form-label">Slug</label>
-                    <input
-                        type="text"
-                        className={`form-control ${errors.slug ? "is-invalid" : ""}`}
-                        name="slug"
-                        value={formData.slug}
-                        onChange={handleOnChange}
+                <BaseFileInput
+                    field={"image"}
+                    label={"Choose image"}
+                    handleOnChange={handleFileChange}
+                    error={errors.image}
+                />
 
-                    />
-                    {errors.slug && (
-                        <div className="invalid-feedback">{errors.slug}</div>
-                    )}
-                </div>
-
-                <div className="mb-3">
-                    <label className="form-label">Image</label>
-                    <input
-                        type="file"
-                        className={`form-control ${errors.image ? "is-invalid" : ""}`}
-                        name="image"
-                        onChange={handleFileChange}
-                        accept="image/*"
-
-                    />
-                    {errors.image && (
-                        <div className="invalid-feedback">{errors.image}</div>
-                    )}
-                </div>
 
                 <button type="submit" className="btn btn-primary">
                     Create
