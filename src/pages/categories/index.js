@@ -1,0 +1,58 @@
+import {useEffect, useState} from "react";
+import axios from "axios";
+
+const CategoriesPage = () => {
+
+    const [list, setList] = useState([]); // створення масиву
+
+    useEffect(() => {
+        axios.get("http://localhost:5003/api/Categories")
+            .then(res => {
+                const {data} = res;
+                console.log('Get list of categories', data);
+                setList(data);
+            })
+            .catch(err => console.log('Error', err));
+    }, []);  //deps - для умови коли має викликатися це, якщо просто [] - то викличеться лише на початку запуску програми і всі
+
+
+    return(
+        <>
+            <div className={"container"}>
+                <h1 className={"text-center"}>Категорії</h1>
+                {/*<button onClick={() => {*/}
+                {/*    setCount(count + 1);*/}
+                {/*}}>*/}
+                {/*    click me*/}
+                {/*</button>*/}
+
+
+                {list.length === 0 ? <h2>List is empty</h2> : // якщо список пустий буде виводитися це
+                    <table className="table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Назва</th>
+                            <th>Зображення</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {
+                            list.map(item => (
+                                <tr key={item.id}>
+                                    <td>{item.id}</td>
+                                    <td>{item.name}</td>
+                                    <td><img width={75} src={`http://localhost:5003/images/200_${item.image}`} alt={item.name}/></td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                }
+            </div>
+
+        </>
+
+    )
+}
+
+export default CategoriesPage;

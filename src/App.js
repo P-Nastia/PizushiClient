@@ -1,6 +1,9 @@
 import './App.css';
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 
-import CategoriesPage from "./pages/categories";
+import CategoriesPage from "./pages/categories/index";
+import CategoriesCreate from "./pages/categories/create";
+import Layout from "./layout";
 
 
 const App = () => { //стрєлочна функція
@@ -24,11 +27,15 @@ const App = () => { //стрєлочна функція
 
 
     return (
-        <>
-            {<CategoriesPage></CategoriesPage> /* підключення сторінки для категорій*/
-
-            }
-        </>
+        <Router>
+             <Routes>
+                 <Route element={<Layout></Layout>}>
+                     // це все буде Outlet
+                     <Route path="/" element={<CategoriesPage></CategoriesPage>} />
+                     <Route path="/create" element={<CategoriesCreate></CategoriesCreate>} />
+                 </Route>
+             </Routes>
+        </Router>
 
     )
 }
