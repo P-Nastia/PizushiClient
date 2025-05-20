@@ -3,90 +3,64 @@ import { useNavigate} from "react-router-dom";
 import axiosInstance from "../../../api/axiosInstance";
 import BaseTextInput from "../../../components/common/baseTextInput";
 import BaseFileInput from "../../../components/common/baseFileInput";
+import * as yup from "yup";
+import {useFormik} from "formik";
 import {BASE_URL} from "../../../api/apiConfig";
 
+const validationSchema = yup.object().shape({
+    name: yup.string().required("Name is required"),
+    slug: yup.string().required("Slug is required"),
+    imageFile: yup.mixed().required("Image is required")
+});
+
 const CategoriesCreate = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        image: null,
-        slug: ''
+
+    const handleFormikSubmit = async (values) => {
+        console.log("Formik submit", values);
+        try {
+            var result = await axiosInstance.post(`${BASE_URL}/api/categories`, values,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                });
+            console.log("Server result", result);
+            navigate(".."); // перехід на сторінку категорій (на одну сторінку назад)
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    const initValues = {
+        name: "",
+        slug: "",
+        imageFile: null
+    }
+
+    const formik=useFormik({
+        initialValues: initValues,
+        validationSchema: validationSchema,
+        onSubmit: handleFormikSubmit
     });
-    const [errors, setErrors] = useState({
-        name: '',
-        slug: '',
-        image:''
-    });
+
+    const {values,handleSubmit,errors,touched,handleChange,setFieldValue} = formik; //values - зміни, які будуть в форміку
+    // touched -- якщо форма була submitнута
 
     const navigate = useNavigate();
-
-    const handleOnChange=(e)=>{
-            setFormData({
-                ...formData,
-                [e.target.name]:e.target.value
-            })
-    }
 
     const handleFileChange=(e)=>{
         const files=e.target.files;
         if(files.length>0){
-            setFormData({
-                ...formData,
-                [e.target.name]:files[0]
-            })
+            setFieldValue("imageFile",files[0]);
         }
         else{
-            console.log(files[0]);
-            setFormData({
-                ...formData,
-                [e.target.name]:null
-            })
+            setFieldValue("imageFile",null);
         }
     }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        const data = new FormData();
-        data.append("name", formData.name);
-        data.append("slug", formData.slug);
-        data.append("imageFile", formData.image);
-
-        try {
-            await axiosInstance.post("/api/categories/create", data, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
-            });
-
-            navigate(".."); // переход на сторінку категорій (на одну сторінку назад)
-        } catch (err) {
-            const newErrors = {};
-            const errors=err.response.data.errors;
-            if (errors && typeof errors === 'object') {
-
-                if (errors.Name) {
-                    newErrors.name = errors.Name[0];
-                    console.log(errors.Name[0]);
-                }
-
-                if (errors.Slug) {
-                    newErrors.slug = errors.Slug[0];
-                    console.log(errors.Slug[0]);
-                }
-
-                if (errors.ImageFile) {
-                    newErrors.image = errors.ImageFile[0];
-                    console.log(errors.ImageFile[0]);
-                }
-
-            }
-            else{
-                console.log(err.response.data);
-                newErrors.name = err.response.data;
-            }
-            setErrors(newErrors);
-        }
-    };
+    console.log("errors",errors);
+    console.log("touched",touched);
 
     return (
         <form className={"col-md-6 offset-md-3 mt-4"} onSubmit={handleSubmit}>
@@ -94,31 +68,34 @@ const CategoriesCreate = () => {
                 <BaseTextInput
                     field={"name"}
                     label={"Name"}
-                    handleOnChange={handleOnChange}
-                    value={formData.name}
-                    error={errors.name}
+                    handleOnChange={handleChange}  // з форміка
+                    value={values.name} // з форміка
+                    error={errors.name} // з форміка
+                    touched={touched.name} // з форміка
                 />
 
                 <BaseTextInput
                     field={"slug"}
                     label={"Slug"}
-                    handleOnChange={handleOnChange}
-                    value={formData.slug}
-                    error={errors.slug}
+                    handleOnChange={handleChange}
+                    value={values.slug}
+                    error={errors.slug} // з форміка
+                    touched={touched.slug} // з форміка
                 />
 
                 <BaseFileInput
                     field={"image"}
                     label={"Choose image"}
                     handleOnChange={handleFileChange}
-                    error={errors.image}
+                    error={errors.imageFile} // з форміка
+                    touched={touched.imageFile} // з форміка
                 />
 
             <div className="mb-3">
                 <img
                     src={
-                        formData.image
-                            ? URL.createObjectURL(formData.image) : null
+                        values.image
+                            ? URL.createObjectURL(values.image) : null
                     }
                     alt=""
                     width={100}

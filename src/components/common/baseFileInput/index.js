@@ -1,4 +1,5 @@
-const BaseFileInput = ({field,label,handleOnChange,error}) => {
+const BaseFileInput = ({field,label,handleOnChange,error,touched}) => {
+    const isError = error && touched;
     return(
         <div className="mb-3">
             <label className="form-label">{label}</label>
@@ -10,7 +11,7 @@ const BaseFileInput = ({field,label,handleOnChange,error}) => {
                 accept="image/*"
 
             />
-            {error && (
+            {isError && (
                 <div className="invalid-feedback">{error}</div>
             )}
         </div>

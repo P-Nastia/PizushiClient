@@ -1,16 +1,20 @@
-const BaseTextInput = ({field,label,handleOnChange,value,error}) => {
+import classNames from "classnames";
+
+const BaseTextInput = ({field,label,handleOnChange,value,error,touched}) => {
+    const isError = error && touched;
     return(
         <div className="mb-3">
             <label className="form-label">{label}</label>
             <input
                 type="text"
-                className={`form-control ${error ? "is-invalid" : ""}`}
+                className={classNames ("form-control",{
+                    "is-invalid": isError // якщо є error то виводимо індикатор про помилку
+                })}
                 name={field}
                 value={value}
                 onChange={handleOnChange}
-
             />
-            {error && (
+            {isError && (
                 <div className="invalid-feedback">{error}</div>
             )}
         </div>
