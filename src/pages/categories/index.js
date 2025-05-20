@@ -1,5 +1,4 @@
 import {useEffect, useState} from "react";
-import axios from "axios";
 import {Link} from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
 import {BASE_URL} from "../../api/apiConfig";
@@ -40,6 +39,7 @@ const CategoriesPage = () => {
                             <th>#</th>
                             <th>Назва</th>
                             <th>Зображення</th>
+                            <th>Дія</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -49,6 +49,9 @@ const CategoriesPage = () => {
                                     <td>{item.id}</td>
                                     <td>{item.name}</td>
                                     <td><img width={75} src={`${BASE_URL}/images/200_${item.image}`} alt={item.name}/></td>
+                                    <td>
+                                        <Link to={`edit/${item.id}`} className="btn btn-warning btn-sm">Edit</Link>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

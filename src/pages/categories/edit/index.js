@@ -1,16 +1,35 @@
-import { useState } from "react";
-import { useNavigate} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
+import {useEffect, useState} from "react";
 import axiosInstance from "../../../api/axiosInstance";
 import BaseTextInput from "../../../components/common/baseTextInput";
 import BaseFileInput from "../../../components/common/baseFileInput";
 import {BASE_URL} from "../../../api/apiConfig";
 
-const CategoriesCreate = () => {
+
+const CategoriesEdit = () => {
+    const { id } = useParams();
+    const [currentImage, setCurrentImage] = useState("");
     const [formData, setFormData] = useState({
+        id: 0,
         name: '',
         image: null,
         slug: ''
     });
+    useEffect(() => {
+        axiosInstance.get(`/api/categories/${id}`)
+            .then(res => {
+                const data = res.data;
+                setFormData({
+                    id: data.id,
+                    name: data.name,
+                    slug: data.slug,
+                    image: null
+                });
+                setCurrentImage(data.image);
+                console.log('Get category:', data.image);
+            })
+            .catch(err => console.error('Error loading category:', err));
+    }, [id]);
     const [errors, setErrors] = useState({
         name: '',
         slug: '',
@@ -20,10 +39,10 @@ const CategoriesCreate = () => {
     const navigate = useNavigate();
 
     const handleOnChange=(e)=>{
-            setFormData({
-                ...formData,
-                [e.target.name]:e.target.value
-            })
+        setFormData({
+            ...formData,
+            [e.target.name]:e.target.value
+        })
     }
 
     const handleFileChange=(e)=>{
@@ -33,6 +52,7 @@ const CategoriesCreate = () => {
                 ...formData,
                 [e.target.name]:files[0]
             })
+            setCurrentImage("");
         }
         else{
             console.log(files[0]);
@@ -47,18 +67,21 @@ const CategoriesCreate = () => {
         e.preventDefault();
 
         const data = new FormData();
+        data.append("id", formData.id);
         data.append("name", formData.name);
         data.append("slug", formData.slug);
-        data.append("imageFile", formData.image);
+        if (formData.image) {
+            data.append("imageFile", formData.image);
+        }
 
         try {
-            await axiosInstance.post("/api/categories/create", data, {
+            await axiosInstance.post("/api/categories/edit", data, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
             });
 
-            navigate(".."); // переход на сторінку категорій (на одну сторінку назад)
+            navigate("..");
         } catch (err) {
             const newErrors = {};
             const errors=err.response.data.errors;
@@ -89,8 +112,10 @@ const CategoriesCreate = () => {
     };
 
     return (
-        <form className={"col-md-6 offset-md-3 mt-4"} onSubmit={handleSubmit}>
-            <h2 className={"text-center"}>Create category</h2>
+        <div >
+
+            <form className={"col-md-6 offset-md-3 mt-4"} onSubmit={handleSubmit}>
+                <h2 className={"text-center"}>Edit category</h2>
                 <BaseTextInput
                     field={"name"}
                     label={"Name"}
@@ -113,23 +138,27 @@ const CategoriesCreate = () => {
                     handleOnChange={handleFileChange}
                     error={errors.image}
                 />
+                <div className="mb-3">
+                    <img
+                        src={
+                            formData.image
+                                ? URL.createObjectURL(formData.image)
+                                : `${BASE_URL}/images/200_${currentImage}`
+                        }
+                        alt=""
+                        width={100}
+                    />
+                </div>
 
-            <div className="mb-3">
-                <img
-                    src={
-                        formData.image
-                            ? URL.createObjectURL(formData.image) : null
-                    }
-                    alt=""
-                    width={100}
-                />
-            </div>
 
                 <button type="submit" className="btn btn-primary">
-                    Create
+                    Edit
                 </button>
-        </form>
+                <Link to="/categories" className="btn btn-primary ms-2">
+                    Cancel
+                </Link>
+            </form>
+        </div>
     );
-};
-
-export default CategoriesCreate;
+}
+export default CategoriesEdit;

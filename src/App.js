@@ -6,6 +6,7 @@ import CategoriesCreate from "./pages/categories/create";
 import Layout from "./components/layout";
 import NoMatch from "./pages/NoMatch";
 import HomePage from "./pages/home";
+import CategoriesEdit from "./pages/categories/edit";
 
 
 const App = () => { //стрєлочна функція
@@ -37,6 +38,7 @@ const App = () => { //стрєлочна функція
                      <Route path={"categories"}>
                          <Route index element={<CategoriesPage></CategoriesPage>} />
                          <Route path={"create"} element={<CategoriesCreate></CategoriesCreate>} />
+                         <Route path={"edit/:id"} element={<CategoriesEdit></CategoriesEdit>} />
 
                      </Route>
                  </Route>
