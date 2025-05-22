@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {forwardRef, useState} from "react";
 import { useNavigate} from "react-router-dom";
 import axiosInstance from "../../../api/axiosInstance";
 import BaseTextInput from "../../../components/common/baseTextInput";
@@ -15,10 +15,10 @@ const validationSchema = yup.object().shape({
 
 const CategoriesCreate = () => {
 
-    const handleFormikSubmit = async (values) => {
+    const handleFormikSubmit = async (values,{setErrors}) => {
         console.log("Formik submit", values);
         try {
-            var result = await axiosInstance.post(`${BASE_URL}/api/categories`, values,
+            var result = await axiosInstance.post(`${BASE_URL}/api/categories/create`, values,
                 {
                     headers: {
                         "Content-Type": "multipart/form-data"
@@ -28,7 +28,17 @@ const CategoriesCreate = () => {
             navigate(".."); // перехід на сторінку категорій (на одну сторінку назад)
         }
         catch (err) {
-            console.log(err);
+            const serverErrors = {};
+            if (Array.isArray(err.response?.data)) {
+
+                err.response.data.forEach(error => {
+                    const field = error.field.charAt(0).toLowerCase() + error.field.slice(1);
+                    serverErrors[field] = error.error;
+                });
+            } else {
+                serverErrors["name"] = "Unknown error during create category. Please try again later.";
+            }
+            setErrors(serverErrors);
         }
     }
 
@@ -41,7 +51,7 @@ const CategoriesCreate = () => {
     const formik=useFormik({
         initialValues: initValues,
         validationSchema: validationSchema,
-        onSubmit: handleFormikSubmit
+        onSubmit: (values,formikHelpers) => handleFormikSubmit(values, formikHelpers)
     });
 
     const {values,handleSubmit,errors,touched,handleChange,setFieldValue} = formik; //values - зміни, які будуть в форміку
