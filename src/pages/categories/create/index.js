@@ -8,14 +8,14 @@ import {useFormik} from "formik";
 import {BASE_URL} from "../../../api/apiConfig";
 
 const validationSchema = yup.object().shape({
-    name: yup.string().required("Name is required"),
-    slug: yup.string().required("Slug is required"),
-    imageFile: yup.mixed().required("Image is required")
+    //name: yup.string().required("Name is required"),
+    //slug: yup.string().required("Slug is required"),
+    //imageFile: yup.mixed().required("Image is required")
 });
 
 const CategoriesCreate = () => {
 
-    const handleFormikSubmit = async (values,{setErrors}) => {
+    const handleFormikSubmit = async (values) => {
         console.log("Formik submit", values);
         try {
             var result = await axiosInstance.post(`${BASE_URL}/api/categories/create`, values,
@@ -28,15 +28,22 @@ const CategoriesCreate = () => {
             navigate(".."); // перехід на сторінку категорій (на одну сторінку назад)
         }
         catch (err) {
+            console.log("Error", err);
             const serverErrors = {};
-            if (Array.isArray(err.response?.data)) {
+            const {response} = err;
+            const {data} = response;
+            if(data) {
+                const {errors} = data;
+                Object.entries(errors).forEach(([key, messages]) => {
+                    let messageLines = "";
+                    messages.forEach(message => {
+                        messageLines += message+" ";
+                        console.log(`${key}: ${message}`);
+                    });
+                    const field = key.charAt(0).toLowerCase() + key.slice(1);
+                    serverErrors[field] = messageLines;
 
-                err.response.data.forEach(error => {
-                    const field = error.field.charAt(0).toLowerCase() + error.field.slice(1);
-                    serverErrors[field] = error.error;
                 });
-            } else {
-                serverErrors["name"] = "Unknown error during create category. Please try again later.";
             }
             setErrors(serverErrors);
         }
@@ -51,10 +58,10 @@ const CategoriesCreate = () => {
     const formik=useFormik({
         initialValues: initValues,
         validationSchema: validationSchema,
-        onSubmit: (values,formikHelpers) => handleFormikSubmit(values, formikHelpers)
+        onSubmit: handleFormikSubmit
     });
 
-    const {values,handleSubmit,errors,touched,handleChange,setFieldValue} = formik; //values - зміни, які будуть в форміку
+    const {values,handleSubmit,errors,setErrors,touched,handleChange,setFieldValue} = formik; //values - зміни, які будуть в форміку
     // touched -- якщо форма була submitнута
 
     const navigate = useNavigate();
@@ -69,8 +76,8 @@ const CategoriesCreate = () => {
         }
     }
 
-    console.log("errors",errors);
-    console.log("touched",touched);
+    // console.log("errors",errors);
+    // console.log("touched",touched);
 
     return (
         <form className={"col-md-6 offset-md-3 mt-4"} onSubmit={handleSubmit}>
