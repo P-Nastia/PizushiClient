@@ -76,9 +76,6 @@ const CategoriesCreate = () => {
         }
     }
 
-    /console.log("errors",errors);
-    console.log("touched",touched);
-
     return (
         <form className={"col-md-6 offset-md-3 mt-4"} onSubmit={handleSubmit}>
             <h2 className={"text-center"}>Create category</h2>
