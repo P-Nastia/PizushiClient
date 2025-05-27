@@ -77,7 +77,7 @@ const UserLogin = () => {
 
 
             <button type="submit" className="btn btn-primary">
-                Create
+                Login
             </button>
         </form>
     );
