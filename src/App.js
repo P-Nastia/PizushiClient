@@ -7,6 +7,7 @@ import Layout from "./components/layout";
 import NoMatch from "./pages/NoMatch";
 import HomePage from "./pages/home";
 import CategoriesEdit from "./pages/categories/edit";
+import UserLogin from "./pages/account/login";
 
 
 const App = () => { //стрєлочна функція
@@ -40,6 +41,9 @@ const App = () => { //стрєлочна функція
                          <Route path={"create"} element={<CategoriesCreate></CategoriesCreate>} />
                          <Route path={"edit/:id"} element={<CategoriesEdit></CategoriesEdit>} />
 
+                     </Route>
+                     <Route path={"account"}>
+                         <Route path={"login"} element={<UserLogin></UserLogin>} />
                      </Route>
                  </Route>
                  <Route path="*" element={<NoMatch></NoMatch>} />
