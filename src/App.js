@@ -7,28 +7,23 @@ import Layout from "./components/layout";
 import NoMatch from "./pages/NoMatch";
 import HomePage from "./pages/home";
 import CategoriesEdit from "./pages/categories/edit";
-import UserLogin from "./pages/account/login";
+import LoginPage from "./pages/account/login";
+import {useAuthStore} from "./store/authStore";
+import {jwtDecode} from "jwt-decode";
+import {useEffect} from "react";
 
 
 const App = () => { //стрєлочна функція
 
-    //Use State - вміє при зміні викликати рендер-компонента в якому знаходиться
-    //count - зберігає значення
-    //setCount - функція для зміни значення
-    // const [count, setCount] = useState(0);
+    const {setUser}=useAuthStore((state)=>state);
 
-
-
-
-
-// const handleClick=()=>{
-//     setList(([...list,{ // так будуть добавлятися нові елементи, деструктуризація
-//         id:1,
-//         name:'pizza',
-//         image: "https://picsum.photos/400/400"
-//     }]))
-// }
-
+    useEffect(()=>{
+        const token=localStorage.getItem("jwt");
+        if(token){
+            const decoded=jwtDecode(token);
+            setUser(decoded);
+        }
+    },[])
 
     return (
         <>
@@ -43,7 +38,7 @@ const App = () => { //стрєлочна функція
 
                      </Route>
                      <Route path={"account"}>
-                         <Route path={"login"} element={<UserLogin></UserLogin>} />
+                         <Route path={"login"} element={<LoginPage></LoginPage>} />
                      </Route>
                  </Route>
                  <Route path="*" element={<NoMatch></NoMatch>} />

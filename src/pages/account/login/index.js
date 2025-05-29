@@ -1,86 +1,105 @@
-import {forwardRef, useState} from "react";
-import { useNavigate} from "react-router-dom";
+
 import axiosInstance from "../../../api/axiosInstance";
-import BaseTextInput from "../../../components/common/baseTextInput";
-
-import {useFormik} from "formik";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import {useNavigate} from "react-router-dom";
 import {BASE_URL} from "../../../api/apiConfig";
+import {useState} from "react";
+import LoadingOverlay from "../../../components/common/loadingOverlay";
+import {mapServerErrorsToFormik} from "../../../helpers/formikErrorHelper";
+import {EmailInput} from "../../../components/common/emailInput";
+import {PasswordInput} from "../../../components/common/passwordInput";
+import {jwtDecode} from "jwt-decode";
+import {useAuthStore} from "../../../store/authStore";
 
-const UserLogin = () => {
+const validationSchema = Yup.object().shape({
+    email: Yup.string().email("Enter valid gmail, for example ex@gmail.com").required("Пошта не може бути порожньою"),
+    password: Yup.string().required("Password cannot be empty")
+});
 
-    const handleFormikSubmit = async (values) => {
-        console.log("Formik submit", values);
-        try {
-            var result = await axiosInstance.post(`${BASE_URL}/api/account/login`, values);
-            console.log("Server result", result);
-            const {token} = result.data;
-            localStorage.setItem('token', token);
-            window.location.href = "/";
-        }
-        catch (err) {
-            console.log("Error", err);
-            const serverErrors = {};
-            const {response} = err;
-            const {data} = response;
-            if(data) {
-                const {errors} = data;
-                Object.entries(errors).forEach(([key, messages]) => {
-                    let messageLines = "";
-                    messages.forEach(message => {
-                        messageLines += message+" ";
-                        console.log(`${key}: ${message}`);
-                    });
-                    const field = key.charAt(0).toLowerCase() + key.slice(1);
-                    serverErrors[field] = messageLines;
+const LoginPage = () => {
+    const [isLoading, setIsLoading] = useState(false);
 
-                });
-            }
-            setErrors(serverErrors);
-        }
-    }
+    const {setUser,user} = useAuthStore((state) => state);
+    console.log("User", user);
 
     const initValues = {
         email: "",
         password: ""
+    };
+
+    const handleFormikSubmit = async (values) => {
+        setIsLoading(true);
+        console.log("Submit formik", values);
+        try {
+            var result = await axiosInstance.post(`${BASE_URL}/api/Account/login`, values);
+            console.log("Server result", result);
+
+            const token = result.data.token;
+
+            localStorage.setItem("jwt", token);
+
+            const decoded = jwtDecode(token);
+            setUser(decoded);
+
+            console.log("Decoded", decoded);
+
+            setIsLoading(false);
+            navigate("/");
+
+        } catch(err) {
+            console.error("Send request error", err);
+
+            mapServerErrorsToFormik(err, setErrors);
+
+            setIsLoading(false);
+        }
     }
 
-    const formik=useFormik({
+    const formik = useFormik({
         initialValues: initValues,
-        onSubmit: handleFormikSubmit
+        onSubmit: handleFormikSubmit,
+        validationSchema: validationSchema,
     });
 
-    const {values,handleSubmit,errors,setErrors,touched,handleChange,setFieldValue} = formik; //values - зміни, які будуть в форміку
-
+    const {values, handleSubmit, errors, touched, setErrors, handleChange, setFieldValue} = formik;
 
     const navigate = useNavigate();
 
     return (
-        <form className={"col-md-6 offset-md-3 mt-4"} onSubmit={handleSubmit}>
-            <h2 className={"text-center"}>Create category</h2>
-            <BaseTextInput
-                field={"email"}
-                label={"Email"}
-                handleOnChange={handleChange}  // з форміка
-                value={values.email} // з форміка
-                error={errors.email} // з форміка
-                touched={touched.email} // з форміка
-            />
+        <>
+            {errors.general && (
+                <div className="alert alert-danger" role="alert">
+                    {errors.general}
+                </div>
+            )}
 
-            <BaseTextInput
-                field={"password"}
-                label={"Password"}
-                handleOnChange={handleChange}
-                value={values.password}
-                error={errors.password} // з форміка
-                touched={touched.password} // з форміка
-            />
+            <h1 className={"text-center"}>Login</h1>
+            <form onSubmit={handleSubmit} noValidate className={"col-md-6 offset-md-3"}>
+                <EmailInput
+                    label="Email"
+                    field="email"
+                    error={errors.email}
+                    touched={touched.email}
+                    value={values.email}
+                    onChange={handleChange}
+                />
 
+                <PasswordInput
+                    label="Пароль"
+                    field="password"
+                    error={errors.password}
+                    touched={touched.password}
+                    value={values.password}
+                    onChange={handleChange}
+                />
 
-            <button type="submit" className="btn btn-primary">
-                Login
-            </button>
-        </form>
+                <button type="submit" className="btn btn-primary">Увійти</button>
+
+                {isLoading && <LoadingOverlay />}
+            </form>
+        </>
     );
 };
 
-export default UserLogin;
+export default LoginPage;
