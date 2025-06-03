@@ -60,7 +60,7 @@ const ProductsPage = () => {
                         <Card className="h-100">
                             <Card.Img
                                 variant="top"
-                                src={`${BASE_URL}/images/200_${product.productImages?.[0]?.name}`}
+                                src={`${BASE_URL}/images/800_${product.productImages?.[0]?.name}`}
                                 alt={product.name}
                                 style={{ objectFit: 'cover', height: '180px' }}
                             />
@@ -70,7 +70,7 @@ const ProductsPage = () => {
                                 {product.sizes?.map((size, index) => (
                                     <div key={index} className="d-flex justify-content-between">
                                         <span>{size.sizeName}</span>
-                                        <strong>${size.price.toFixed(2)}</strong>
+                                        <strong>{size.price} грн</strong>
                                     </div>
                                 ))}
                             <br/>
