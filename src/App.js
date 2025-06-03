@@ -12,7 +12,7 @@ import {useAuthStore} from "./store/authStore";
 import {jwtDecode} from "jwt-decode";
 import {useEffect} from "react";
 import ProductsPage from "./pages/products";
-
+import ProductPage from "./pages/products/product";
 
 const App = () => { //стрєлочна функція
 
@@ -43,7 +43,7 @@ const App = () => { //стрєлочна функція
                      </Route>
                      <Route path={"products"}>
                          <Route index element={<ProductsPage></ProductsPage>} />
-                         <Route index element={<ProductsPage></ProductsPage>} />
+                         <Route path={"product/:id"} element={<ProductPage></ProductPage>} />
                      </Route>
                  </Route>
                  <Route path="*" element={<NoMatch></NoMatch>} />
