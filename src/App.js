@@ -13,6 +13,7 @@ import {jwtDecode} from "jwt-decode";
 import {useEffect} from "react";
 import ProductsPage from "./pages/products";
 import ProductPage from "./pages/products/product";
+import CreateProductPage from "./pages/products/create";
 
 const App = () => { //стрєлочна функція
 
@@ -44,6 +45,7 @@ const App = () => { //стрєлочна функція
                      <Route path={"products"}>
                          <Route index element={<ProductsPage></ProductsPage>} />
                          <Route path={"product/:id"} element={<ProductPage></ProductPage>} />
+                         <Route path={"create"} element={<CreateProductPage></CreateProductPage>} />
                      </Route>
                  </Route>
                  <Route path="*" element={<NoMatch></NoMatch>} />

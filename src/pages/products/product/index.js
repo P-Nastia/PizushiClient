@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import axiosInstance from "../../../api/axiosInstance";
 import {BASE_URL} from "../../../api/apiConfig";
 import {Spinner} from "react-bootstrap";
+import CreateProductPage from "../create";
 
 const ProductPage = () => {
     const { id } = useParams();
@@ -38,7 +39,6 @@ console.log("current",current);
     return (
         <div className=" col-md-9 offset-md-2 d-flex justify-content-center align-items-center" style={{ marginTop: "7%" }}>
             <div className="row">
-
                 <div className="col-md-6">
                     <div id="productCarousel" className="carousel slide" data-bs-ride="false">
 
