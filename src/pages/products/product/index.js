@@ -60,7 +60,7 @@ console.log("current",current);
                                 <div key={img.id} className={`carousel-item ${index === 0 ? "active" : ""}`}>
                                     <img
                                         src={`${BASE_URL}/images/800_${img.name}`}
-                                        className="d-block w-300 rounded-3"
+                                        className="d-block w-100 rounded-3"
                                         alt={`Product slide ${index + 1}`}
                                     />
                                 </div>

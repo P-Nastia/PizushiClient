@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../../../api/axiosInstance";
 import ImageUploaderSortable from "../../../components/productCreatePage/imageUploaderSortable";
 import {useNavigate} from "react-router-dom";
+import DragDropUpload from "../../../components/productCreatePage/dragDropUpload";
 
 const CreateProductPage = () => {
     const [productData, setProductData] = useState({
@@ -58,7 +59,9 @@ const CreateProductPage = () => {
 
     const handleCreateProduct = async () => {
         try {
-            productData.imageFiles=images;
+            console.log("Images",images);
+            productData.imageFiles = images.map(x=>x.originFileObj);
+            console.log("Images",images);
             console.log("Send Data server",productData);
 
             const res = await axiosInstance.post("/api/Products/create", productData, {
@@ -93,7 +96,8 @@ const CreateProductPage = () => {
 
                 <div className="col-md-6 mb-4">
                     <div className="border rounded p-3 h-100">
-                        <ImageUploaderSortable images={images} setImages={setImages} />
+                        {/*<ImageUploaderSortable images={images} setImages={setImages} />*/}
+                        <DragDropUpload fileList={images} setFileList={setImages}></DragDropUpload>
                     </div>
                 </div>
 
