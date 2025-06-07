@@ -15,6 +15,7 @@ import ProductsPage from "./pages/products";
 import ProductPage from "./pages/products/product";
 import CreateProductPage from "./pages/products/create";
 import TestingPage from "./pages/products/testing";
+import EditProductPage from "./pages/products/edit";
 
 const App = () => { //стрєлочна функція
 
@@ -46,9 +47,9 @@ const App = () => { //стрєлочна функція
                      <Route path={"products"}>
                          <Route index element={<ProductsPage></ProductsPage>} />
                          <Route path={"product/:id"} element={<ProductPage></ProductPage>} />
+                         <Route path={"edit/:id"} element={<EditProductPage></EditProductPage>} />
                          <Route path={"create"} element={<CreateProductPage></CreateProductPage>} />
                      </Route>
-                     {/*<Route path={"testing"} element={<TestingPage></TestingPage>} />*/}
 
                  </Route>
                  <Route path="*" element={<NoMatch></NoMatch>} />
