@@ -76,12 +76,10 @@ const ProductsPage = () => {
                                 ))}
                             <br/>
                                 <div className="mt-auto d-grid">
-                                    <Button variant="primary">
-                                        <Link to={`product/${product.id}`} className={"text-white text-decoration-none"}>Show</Link>
-                                    </Button>
-                                    <Button className={"mt-2"} variant="success">
-                                        <Link to={`edit/${product.id}`} className={"text-white text-decoration-none"}>Edit</Link>
-                                    </Button>
+                                        <Link to={`product/${product.id}`} className={"btn btn-primary mb-2"}>Show</Link>
+
+                                        <Link to={`edit/${product.id}`} className={"btn btn-success"}>Edit</Link>
+
                                 </div>
                             </Card.Body>
                         </Card>

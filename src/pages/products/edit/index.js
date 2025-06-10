@@ -9,14 +9,14 @@ const EditProductPage = () => {
     const {id} = useParams();
 
     const [productData, setProductData] = useState({
+        id: id,
         name: "",
         slug: "",
         price: "",
         weight: "",
         productSizeId: "",
         categoryId: "",
-        ingredientIds: [],
-        imageFiles: [],
+        ingredientIds: []
     });
     const [images, setImages] = useState([]);
 
@@ -26,28 +26,6 @@ const EditProductPage = () => {
 
     const [errorMessage, setErrorMessage] = useState(null);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if(!id) return;
-        axiosInstance.get(`/api/Products/id/${id}`)
-            .then(res => {
-                const current = res.data;
-                const {productImages} = res.data;
-                console.log("current", current);
-                console.log("productImages", productImages);
-
-                const updatedFileList=productImages?.map((image) => ({
-                    uId:image.id.toString(),
-                    name:image.name,
-                    url:`${BASE_URL}/images/800_${image.name}`,
-                    originalUrl: new File([new Blob([''])],image.name,{type:'old-image'}),
-                }));
-                setImages(updatedFileList);
-
-            })
-            .catch(err => console.error("Error loading product", err));
-    },[id]);
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -62,6 +40,7 @@ const EditProductPage = () => {
                 setSizes(Array.isArray(sizesRes.data) ? sizesRes.data : []);
                 setCategories(Array.isArray(categoriesRes.data) ? categoriesRes.data : []);
                 setIngredients(Array.isArray(ingredientsRes.data) ? ingredientsRes.data : []);
+
             } catch (error) {
                 console.error("Error fetching product data:", error);
             }
@@ -69,6 +48,48 @@ const EditProductPage = () => {
 
         fetchData();
     }, []);
+
+
+    useEffect(() => {
+        if(!id || ingredients.length === 0) return;
+        axiosInstance.get(`/api/Products/id/${id}`)
+            .then(res => {
+                const current = res.data;
+                const {productImages} = res.data;
+                console.log("current", current);
+                console.log("productImages", productImages);
+
+                const updatedFileList=productImages?.map((image) => ({
+                    uId:image.id.toString(),
+                    name:image.name,
+                    url:`${BASE_URL}/images/800_${image.name}`,
+                    originFileObj: new File([new Blob([''])],image.name,{type:'old-image'}),
+                }));
+                setImages(updatedFileList);
+
+                productData.weight=current.weight;
+                productData.price=current.price;
+                productData.productSizeId=current.productSize.id;
+                productData.categoryId=current.category.id;
+                productData.name=current.name;
+                productData.slug=current.slug;
+                console.log(productData);
+
+                const {productIngredients} = current;
+                console.log("productIngredients", productIngredients);
+                console.log("ingredients", ingredients);
+                ingredients.forEach((ing) => {
+                    console.log("ingredient", ing);
+                    productIngredients?.forEach((prodIng) => {
+                        if(prodIng.id === ing.id){
+                            handleIngredientToggle(ing.id);
+                            console.log("toggle", ing);
+                        }
+                    })
+                })
+            })
+            .catch(err => console.error("Error loading product", err));
+    },[id,ingredients]);
 
     const handleIngredientToggle = (id) => {
         setProductData(prev => {
@@ -83,14 +104,15 @@ const EditProductPage = () => {
         });
     };
 
-    const handleCreateProduct = async () => {
+    const handleEditProduct = async () => {
         try {
+            console.log("edit product", productData);
             console.log("Images",images);
             productData.imageFiles = images.map(x=>x.originFileObj);
             console.log("Images",images);
             console.log("Send Data server",productData);
 
-            const res = await axiosInstance.post("/api/Products/create", productData, {
+            const res = await axiosInstance.put("/api/Products/edit", productData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
@@ -122,7 +144,6 @@ const EditProductPage = () => {
 
                 <div className="col-md-6 mb-4">
                     <div className="border rounded p-3 h-100">
-                        {/*<ImageUploaderSortable images={images} setImages={setImages} />*/}
                         <DragDropUpload fileList={images} setFileList={setImages}></DragDropUpload>
                     </div>
                 </div>
@@ -195,7 +216,7 @@ const EditProductPage = () => {
                                 ))}
                             </select>
                         </div>
-                        <button className="btn btn-success" onClick={handleCreateProduct}>
+                        <button className="btn btn-success" onClick={handleEditProduct}>
                             Додати продукт
                         </button>
                     </div>
