@@ -61,8 +61,8 @@ const EditProductPage = () => {
             .then(res => {
                 const current = res.data;
                 const {productImages} = res.data;
-                console.log("current", current);
-                console.log("productImages", productImages);
+                //console.log("current", current);
+                //console.log("productImages", productImages);
 
                 const updatedFileList=productImages?.map((image) => ({
                     uId:image.id.toString(),
@@ -72,14 +72,13 @@ const EditProductPage = () => {
                 }));
                 setImages(updatedFileList);
 
-                productData.weight=current.weight;
-                productData.price=current.price;
-                productData.productSizeId=current.productSize.id;
-                productData.categoryId=current.category.id;
-                productData.name=current.name;
-                productData.slug=current.slug;
-                productData.ingredientIds=current.productIngredients.map(pi => pi.id)
-                console.log(productData);
+                setProductData({
+                    ...productImages,
+                    ...current,
+                    categoryId: current.category.id,
+                    productSizeId: current.productSize.id,
+                    ingredientIds: current.productIngredients.map(pi=>pi.id)
+                });
 
             })
             .catch(err => console.error("Error loading product", err));
@@ -106,11 +105,8 @@ const EditProductPage = () => {
 
     const handleIngModalOk = async () => {
         try {
-            const formData = new FormData();
-            formData.append("name", newIngredient.name);
-            formData.append("imageFile", newIngredient.imageFile);
 
-            const res = await axiosInstance.post("/api/Products/ingredients", formData, {
+            const res = await axiosInstance.post("/api/Products/ingredients", newIngredient, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
@@ -119,17 +115,6 @@ const EditProductPage = () => {
             const newIng = res.data;
 
             setIngredients(prev => [...prev, newIng]);
-
-            setProductData(prev => {
-                const updatedIds = prev.ingredientIds.includes(newIng.id)
-                    ? prev.ingredientIds
-                    : [...prev.ingredientIds, newIng.id];
-
-                return {
-                    ...prev,
-                    ingredientIds: updatedIds
-                };
-            });
 
             setIsIngModalVisible(false);
         } catch (error) {

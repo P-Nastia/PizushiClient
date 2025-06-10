@@ -44,7 +44,8 @@ const ProductsPage = () => {
         setGroupedProducts(grouped);
     };
 
-    const showDeleteModal = () => {
+    const showDeleteModal = (id) => {
+        setDeleteId(id);
         setIsDeleteModalVisible(true);
     };
 
@@ -110,7 +111,7 @@ const ProductsPage = () => {
                                             e.target.style.backgroundColor = '#ffc107';
                                             e.target.style.color = 'white';
                                             e.target.style.borderColor = '#ffc107';
-                                        }} className={"btn btn-warning text-white "} onClick={()=>{setDeleteId(product.id); showDeleteModal()}}>Delete</Button>
+                                        }} className={"btn btn-warning text-white "} onClick={()=>{showDeleteModal(product.id)}}>Delete</Button>
 
                                 </div>
                             </Card.Body>
