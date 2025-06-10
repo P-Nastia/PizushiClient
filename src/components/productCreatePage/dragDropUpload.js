@@ -23,7 +23,6 @@ const DragDropUpload = ({ fileList, setFileList }) => {
         setFileList(items);
     };
 
-    console.log("list files", fileList);
 
     return(
         <div>

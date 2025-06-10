@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../../api/axiosInstance";
-import ImageUploaderSortable from "../../../components/productCreatePage/imageUploaderSortable";
+import { Modal, Input } from 'antd';
 import {useNavigate, useParams} from "react-router-dom";
 import DragDropUpload from "../../../components/productCreatePage/dragDropUpload";
 import {BASE_URL} from "../../../api/apiConfig";
@@ -27,6 +27,12 @@ const EditProductPage = () => {
     const [errorMessage, setErrorMessage] = useState(null);
     const navigate = useNavigate();
 
+    const [isIngModalVisible, setIsIngModalVisible] = useState(false);
+    const[newIngredient, setNewIngredient] = useState({
+        name: "",
+        imageFile : null
+    });
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -48,7 +54,6 @@ const EditProductPage = () => {
 
         fetchData();
     }, []);
-
 
     useEffect(() => {
         if(!id || ingredients.length === 0) return;
@@ -73,20 +78,9 @@ const EditProductPage = () => {
                 productData.categoryId=current.category.id;
                 productData.name=current.name;
                 productData.slug=current.slug;
+                productData.ingredientIds=current.productIngredients.map(pi => pi.id)
                 console.log(productData);
 
-                const {productIngredients} = current;
-                console.log("productIngredients", productIngredients);
-                console.log("ingredients", ingredients);
-                ingredients.forEach((ing) => {
-                    console.log("ingredient", ing);
-                    productIngredients?.forEach((prodIng) => {
-                        if(prodIng.id === ing.id){
-                            handleIngredientToggle(ing.id);
-                            console.log("toggle", ing);
-                        }
-                    })
-                })
             })
             .catch(err => console.error("Error loading product", err));
     },[id,ingredients]);
@@ -102,14 +96,56 @@ const EditProductPage = () => {
             }
             return { ...prev, ingredientIds: newIds };
         });
+
+        console.log("IDS",productData.ingredientIds);
+    };
+
+    const showIngModal = () => {
+        setIsIngModalVisible(true);
+    };
+
+    const handleIngModalOk = async () => {
+        try {
+            const formData = new FormData();
+            formData.append("name", newIngredient.name);
+            formData.append("imageFile", newIngredient.imageFile);
+
+            const res = await axiosInstance.post("/api/Products/ingredients", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            });
+
+            const newIng = res.data;
+
+            setIngredients(prev => [...prev, newIng]);
+
+            setProductData(prev => {
+                const updatedIds = prev.ingredientIds.includes(newIng.id)
+                    ? prev.ingredientIds
+                    : [...prev.ingredientIds, newIng.id];
+
+                return {
+                    ...prev,
+                    ingredientIds: updatedIds
+                };
+            });
+
+            setIsIngModalVisible(false);
+        } catch (error) {
+            console.log("Помилка при створенні інгредієнта");
+        }
+    };
+
+    const handleIngModalCancel = () => {
+        setIsIngModalVisible(false);
+        newIngredient.name = "";
+        newIngredient.imageFile = null;
     };
 
     const handleEditProduct = async () => {
         try {
-            console.log("edit product", productData);
-            console.log("Images",images);
             productData.imageFiles = images.map(x=>x.originFileObj);
-            console.log("Images",images);
             console.log("Send Data server",productData);
 
             const res = await axiosInstance.put("/api/Products/edit", productData, {
@@ -217,7 +253,7 @@ const EditProductPage = () => {
                             </select>
                         </div>
                         <button className="btn btn-success" onClick={handleEditProduct}>
-                            Додати продукт
+                            Редагувати продукт
                         </button>
                     </div>
                 </div>
@@ -244,13 +280,52 @@ const EditProductPage = () => {
                         >
                             {ing.name}
                         </div>
+
                     ))}
+                    <div
+                        onClick={() => showIngModal()}
+                        style={{
+                            cursor: "pointer",
+                            userSelect: "none",
+                            padding: "5px 10px",
+                            borderRadius: "5px",
+                            border: "1px solid black",
+                            backgroundColor: "gray",
+                            marginRight: 8,
+                            marginBottom: 8
+                        }}
+                    >+
+                    </div>
                     {productData.ingredientIds.length === 0 && (
                         <span className="text-muted">Жодного інгредієнта не додано</span>
                     )}
                 </div>
             </div>
+            <Modal
+                title="Додати інгредієнт"
+                open={isIngModalVisible}
+                onOk={handleIngModalOk}
+                onCancel={handleIngModalCancel}
+                okText="Додати"
+                cancelText="Скасувати"
+            >
+                <Input
+                    placeholder="Назва інгредієнта"
+                    value={newIngredient.name}
+                    onChange={(e) => setNewIngredient({...newIngredient, name: e.target.value})}
+                />
+
+                <Input
+                    type="file"
+                    className={`form-control mt-4`}
+                    onChange={(e) => setNewIngredient({...newIngredient, imageFile: e.target.files[0]})}
+                    accept="image/*"
+
+                />
+            </Modal>
+
         </div>
+
     );
 };
 

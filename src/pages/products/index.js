@@ -1,21 +1,22 @@
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Link} from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
 import {BASE_URL} from "../../api/apiConfig";
-import {Card,Button,Col,Row,Spinner,Container} from "react-bootstrap";
+import {Card,Col,Row,Spinner,Container} from "react-bootstrap";
+import {Button, Modal} from "antd";
 
 
 const ProductsPage = () => {
-    const [list, setList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [groupedProducts, setGroupedProducts] = useState([]);
+    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+    const [id, setDeleteId] = useState(null);
 
     useEffect(() => {
         axiosInstance.get("/api/Products")
             .then(res => {
                 const { data } = res;
                 console.log('Get list of products', data);
-                setList(data);
                 groupBySlug(data);
             })
             .catch(err => console.error('Error loading products', err))
@@ -41,6 +42,31 @@ const ProductsPage = () => {
         }, {}));
 
         setGroupedProducts(grouped);
+    };
+
+    const showDeleteModal = () => {
+        setIsDeleteModalVisible(true);
+    };
+
+    const handleDeleteModalOk = async () => {
+        try {
+            if (!id) return;
+
+            await axiosInstance.delete(`/api/Products/delete`,{data: {id: id}});
+
+            setGroupedProducts(prev =>
+                prev.filter(product => product.id !== id)
+            );
+
+            setIsDeleteModalVisible(false);
+            setDeleteId(null);
+        } catch (error) {
+            console.log("Помилка при видаленні продукту", error);
+        }
+    };
+
+    const handleDeleteModalCancel = () => {
+        setIsDeleteModalVisible(false);
     };
 
     if (loading) {
@@ -78,7 +104,13 @@ const ProductsPage = () => {
                                 <div className="mt-auto d-grid">
                                         <Link to={`product/${product.id}`} className={"btn btn-primary mb-2"}>Show</Link>
 
-                                        <Link to={`edit/${product.id}`} className={"btn btn-success"}>Edit</Link>
+                                        <Link to={`edit/${product.id}`} className={"btn btn-success mb-2"}>Edit</Link>
+
+                                        <Button onMouseEnter={(e) => {
+                                            e.target.style.backgroundColor = '#ffc107';
+                                            e.target.style.color = 'white';
+                                            e.target.style.borderColor = '#ffc107';
+                                        }} className={"btn btn-warning text-white "} onClick={()=>{setDeleteId(product.id); showDeleteModal()}}>Delete</Button>
 
                                 </div>
                             </Card.Body>
@@ -86,7 +118,17 @@ const ProductsPage = () => {
                     </Col>
                 ))}
             </Row>
+            <Modal
+                title="Ви впевнені, що хочете видалити цей продукт?"
+                open={isDeleteModalVisible}
+                onOk={handleDeleteModalOk}
+                onCancel={handleDeleteModalCancel}
+                okText="Видалити"
+                cancelText="Скасувати"
+            >
+            </Modal>
         </Container>
+
     );
 };
 
