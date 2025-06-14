@@ -14,19 +14,25 @@ import {useEffect} from "react";
 import ProductsPage from "./pages/products";
 import ProductPage from "./pages/products/product";
 import CreateProductPage from "./pages/products/create";
-import TestingPage from "./pages/products/testing";
 import EditProductPage from "./pages/products/edit";
+import {useCartStore} from "./store/cartStore";
 
 const App = () => { //стрєлочна функція
 
     const {setUser}=useAuthStore((state)=>state);
+    const loadCart = useCartStore((state) => state.loadCart);
 
-    useEffect(()=>{
+    const checkAuth = async()=>{
         const token=localStorage.getItem("jwt");
         if(token){
             const decoded=jwtDecode(token);
-            setUser(decoded);
+            await setUser(decoded);
         }
+        await loadCart();
+    }
+
+    useEffect(()=>{
+        checkAuth();
     },[])
 
     return (

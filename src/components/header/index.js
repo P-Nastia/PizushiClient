@@ -11,15 +11,10 @@ import axiosInstance from "../../api/axiosInstance";
 
 const Header = () => {
     const navigate = useNavigate();
-    const loadCart = useCartStore((state) => state.loadCart);
     const items = useCartStore((state) => state.items);
     const [isCartModalVisible, setIsCartModalVisible] = useState(false);
     const addItem = useCartStore((state) => state.addItem);
     const removeItem = useCartStore((state) => state.removeItem);
-
-    useEffect( () => {
-        loadCart();
-    }, []);
 
     const totalCount = items.reduce((sum, item) => sum + item.quantity, 0);
     const { user, logout } = useAuthStore((state) => state);
