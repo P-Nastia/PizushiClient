@@ -1,5 +1,5 @@
 import './App.css';
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import {  Routes, Route } from "react-router-dom";
 
 import CategoriesPage from "./pages/categories";
 import CategoriesCreate from "./pages/categories/create";
