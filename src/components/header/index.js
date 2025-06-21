@@ -1,13 +1,11 @@
-import {Link, NavLink, useNavigate} from "react-router-dom";
-import {jwtDecode} from "jwt-decode";
+import {NavLink, useNavigate} from "react-router-dom";
 import {useAuthStore} from "../../store/authStore";
 import {BASE_URL} from "../../api/apiConfig";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faShoppingCart} from "@fortawesome/free-solid-svg-icons";
+import {faShoppingCart,faReceipt} from "@fortawesome/free-solid-svg-icons";
 import { useCartStore } from "../../store/cartStore";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Button, Modal} from "antd";
-import axiosInstance from "../../api/axiosInstance";
 
 const Header = () => {
     const navigate = useNavigate();
@@ -108,6 +106,12 @@ const Header = () => {
             </span>
                                 )}
                             </button>
+                        </li>
+
+                        <li className="nav-item ms-1 mt-2 position-relative ">
+                            <NavLink to="/orders" className={({isActive}) => isActive ? 'nav-link active' : 'nav-link'}>
+                                <FontAwesomeIcon icon={faReceipt} />
+                            </NavLink>
                         </li>
 
                     </ul>
