@@ -17,6 +17,7 @@ import CreateProductPage from "./pages/products/create";
 import EditProductPage from "./pages/products/edit";
 import {useCartStore} from "./store/cartStore";
 import OrdersPage from "./pages/orders";
+import ProfilePage from "./pages/profile";
 
 const App = () => { //стрєлочна функція
 
@@ -56,6 +57,10 @@ const App = () => { //стрєлочна функція
                          <Route path={"product/:id"} element={<ProductPage></ProductPage>} />
                          <Route path={"edit/:id"} element={<EditProductPage></EditProductPage>} />
                          <Route path={"create"} element={<CreateProductPage></CreateProductPage>} />
+                     </Route>
+
+                     <Route path={"profile"}>
+                         <Route index element={<ProfilePage></ProfilePage>} />
                      </Route>
 
                      <Route path={"orders"}>

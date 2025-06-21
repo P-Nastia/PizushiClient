@@ -73,11 +73,13 @@ const Header = () => {
                     <ul className="navbar-nav ms-auto">
 
                         {user ? (
-                            <div className="flex items-center gap-2">
-                                <img src={`${BASE_URL}/images/50_${user.image}`} alt="Avatar" className="rounded-circle mx-3" />
-                                <span className={"mx-3 text-white"}>{user.email}</span>
+                            <>
+                                <NavLink to={"profile"} className="flex items-center gap-2 text-decoration-none">
+                                    <img src={`${BASE_URL}/images/50_${user.image}`} alt="Avatar" className="rounded-circle mx-3" />
+                                </NavLink>
                                 <button className={"mx-3 btn btn-link text-white text-decoration-none p-0 m-0"}  onClick={handleLogout}>Вийти</button>
-                            </div>
+                            </>
+
                         ) : (
                             <>
                                 <li className="nav-item">
@@ -106,12 +108,6 @@ const Header = () => {
             </span>
                                 )}
                             </button>
-                        </li>
-
-                        <li className="nav-item ms-1 mt-2 position-relative ">
-                            <NavLink to="/orders" className={({isActive}) => isActive ? 'nav-link active' : 'nav-link'}>
-                                <FontAwesomeIcon icon={faReceipt} />
-                            </NavLink>
                         </li>
 
                     </ul>
